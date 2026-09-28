@@ -1,0 +1,7 @@
+lane,shipments,revenue_usd,direct_cost_usd,contribution_usd,contribution_margin,margin_mean_bootstrap_ci_low,margin_mean_bootstrap_ci_high,on_time_rate,exception_rate,revenue_uplift_to_target_margin
+Detroit-Cleveland,200,81572.29,67252.19,14320.1,0.1756,0.1511,0.1805,0.925,0.015,0.0054
+Detroit-Toronto,200,117231.29,88206.98,29024.31,0.2476,0.2269,0.2528,0.94,0.065,0
+Detroit-Indianapolis,200,122386.64,92077.23,30309.41,0.2477,0.2271,0.252,0.935,0.075,0
+Detroit-Chicago,200,122907.58,91823.29,31084.29,0.2529,0.2328,0.2571,0.915,0.07,0
+Detroit-Nashville,200,223887.85,164484.21,59403.64,0.2653,0.2472,0.2695,0.9,0.08,0
+Detroit-Atlanta,200,290721.1,206446.28,84274.82,0.2899,0.2717,0.2921,0.88,0.055,0
