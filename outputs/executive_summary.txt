@@ -1,0 +1,19 @@
+SYNTHETIC TRANSPORTATION PROFITABILITY CASE
+All values are simulated and are not employer results.
+
+Shipments: 1,200
+Modeled revenue: $958,707
+Modeled direct cost: $710,290
+Modeled contribution: $248,417
+Weighted contribution margin: 25.9%
+On-time rate: 91.6%
+Service-exception rate: 6.0%
+Target margin scenario: 18%
+
+Lane scorecard sorted from lowest to highest contribution margin:
+- Detroit-Cleveland: margin 17.6%; on-time 92.5%; illustrative revenue uplift to target margin 0.5%
+- Detroit-Toronto: margin 24.8%; on-time 94.0%; illustrative revenue uplift to target margin 0.0%
+- Detroit-Indianapolis: margin 24.8%; on-time 93.5%; illustrative revenue uplift to target margin 0.0%
+- Detroit-Chicago: margin 25.3%; on-time 91.5%; illustrative revenue uplift to target margin 0.0%
+- Detroit-Nashville: margin 26.5%; on-time 90.0%; illustrative revenue uplift to target margin 0.0%
+- Detroit-Atlanta: margin 29.0%; on-time 88.0%; illustrative revenue uplift to target margin 0.0%
