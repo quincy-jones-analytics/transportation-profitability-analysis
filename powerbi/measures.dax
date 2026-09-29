@@ -1,28 +1,77 @@
-// Import the Shipments table and create the Calendar table from BUILD_GUIDE.md.
-Total Revenue = SUM(Shipments[revenue])
-Budget Revenue = SUM(Shipments[budget_revenue])
-Revenue Variance = [Total Revenue] - [Budget Revenue]
-Revenue Variance % = DIVIDE([Revenue Variance], [Budget Revenue])
-Total Cost = SUM(Shipments[total_cost])
-Budget Cost = SUM(Shipments[budget_cost])
-Favorable Cost Variance = [Budget Cost] - [Total Cost]
-Gross Profit = [Total Revenue] - [Total Cost]
-Gross Margin % = DIVIDE([Gross Profit], [Total Revenue])
-Shipment Count = DISTINCTCOUNT(Shipments[shipment_id])
-Total Miles = SUM(Shipments[miles])
-Revenue per Mile = DIVIDE([Total Revenue], [Total Miles])
-Cost per Mile = DIVIDE([Total Cost], [Total Miles])
-Profit per Shipment = DIVIDE([Gross Profit], [Shipment Count])
-On-Time Shipments = CALCULATE([Shipment Count], Shipments[on_time_flag] = 1)
-On-Time % = DIVIDE([On-Time Shipments], [Shipment Count])
-Exception Shipments = CALCULATE([Shipment Count], Shipments[exception_type] <> "None")
-Exception Rate = DIVIDE([Exception Shipments], [Shipment Count])
-Fuel Cost % = DIVIDE(SUM(Shipments[fuel_cost]), [Total Cost])
-Labor Cost % = DIVIDE(SUM(Shipments[driver_labor_cost]), [Total Cost])
+// Import data/synthetic_shipments.csv as Shipments.
+// Create total_cost_usd in Power Query by summing the five source cost fields.
+// Create Calendar as shown in BUILD_GUIDE.md and relate it to ship_date.
+
+Total Revenue =
+SUM(Shipments[revenue_usd])
+
+Total Cost =
+SUM(Shipments[total_cost_usd])
+
+Gross Profit =
+[Total Revenue] - [Total Cost]
+
+Gross Margin % =
+DIVIDE([Gross Profit], [Total Revenue])
+
+Shipment Count =
+DISTINCTCOUNT(Shipments[shipment_id])
+
+Total Miles =
+SUM(Shipments[distance_miles])
+
+Revenue per Mile =
+DIVIDE([Total Revenue], [Total Miles])
+
+Cost per Mile =
+DIVIDE([Total Cost], [Total Miles])
+
+Revenue per Shipment =
+DIVIDE([Total Revenue], [Shipment Count])
+
+On-Time Shipments =
+CALCULATE([Shipment Count], Shipments[on_time] = 1)
+
+On-Time % =
+DIVIDE([On-Time Shipments], [Shipment Count])
+
+Exception Shipments =
+CALCULATE([Shipment Count], Shipments[service_exception] = 1)
+
+Exception Rate =
+DIVIDE([Exception Shipments], [Shipment Count])
+
+Fuel Cost =
+SUM(Shipments[fuel_cost_usd])
+
+Driver Cost =
+SUM(Shipments[driver_cost_usd])
+
+Maintenance Cost =
+SUM(Shipments[maintenance_cost_usd])
+
+Tolls =
+SUM(Shipments[tolls_usd])
+
+Accessorial Cost =
+SUM(Shipments[accessorial_cost_usd])
+
 Rolling 3M Gross Margin % =
-VAR Period = DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -3, MONTH)
-RETURN DIVIDE(CALCULATE([Gross Profit], Period), CALCULATE([Total Revenue], Period))
-Prior Month Gross Profit = CALCULATE([Gross Profit], DATEADD('Calendar'[Date], -1, MONTH))
-Gross Profit MoM % = DIVIDE([Gross Profit] - [Prior Month Gross Profit], [Prior Month Gross Profit])
-Pricing Floor at 20% Margin = DIVIDE([Total Cost], 1 - 0.20)
-Rate Change Needed = [Pricing Floor at 20% Margin] - [Total Revenue]
+VAR Period =
+    DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -3, MONTH)
+RETURN
+    DIVIDE(CALCULATE([Gross Profit], Period), CALCULATE([Total Revenue], Period))
+
+Prior Month Gross Profit =
+CALCULATE([Gross Profit], DATEADD('Calendar'[Date], -1, MONTH))
+
+Gross Profit MoM % =
+DIVIDE([Gross Profit] - [Prior Month Gross Profit], [Prior Month Gross Profit])
+
+Required Revenue at Target Margin =
+VAR TargetMargin = SELECTEDVALUE('Margin Target'[Margin], 0.18)
+RETURN
+    DIVIDE([Total Cost], 1 - TargetMargin)
+
+Revenue Gap to Target Margin =
+[Required Revenue at Target Margin] - [Total Revenue]
