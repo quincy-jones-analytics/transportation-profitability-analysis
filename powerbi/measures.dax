@@ -1,0 +1,28 @@
+// Import the Shipments table and create the Calendar table from BUILD_GUIDE.md.
+Total Revenue = SUM(Shipments[revenue])
+Budget Revenue = SUM(Shipments[budget_revenue])
+Revenue Variance = [Total Revenue] - [Budget Revenue]
+Revenue Variance % = DIVIDE([Revenue Variance], [Budget Revenue])
+Total Cost = SUM(Shipments[total_cost])
+Budget Cost = SUM(Shipments[budget_cost])
+Favorable Cost Variance = [Budget Cost] - [Total Cost]
+Gross Profit = [Total Revenue] - [Total Cost]
+Gross Margin % = DIVIDE([Gross Profit], [Total Revenue])
+Shipment Count = DISTINCTCOUNT(Shipments[shipment_id])
+Total Miles = SUM(Shipments[miles])
+Revenue per Mile = DIVIDE([Total Revenue], [Total Miles])
+Cost per Mile = DIVIDE([Total Cost], [Total Miles])
+Profit per Shipment = DIVIDE([Gross Profit], [Shipment Count])
+On-Time Shipments = CALCULATE([Shipment Count], Shipments[on_time_flag] = 1)
+On-Time % = DIVIDE([On-Time Shipments], [Shipment Count])
+Exception Shipments = CALCULATE([Shipment Count], Shipments[exception_type] <> "None")
+Exception Rate = DIVIDE([Exception Shipments], [Shipment Count])
+Fuel Cost % = DIVIDE(SUM(Shipments[fuel_cost]), [Total Cost])
+Labor Cost % = DIVIDE(SUM(Shipments[driver_labor_cost]), [Total Cost])
+Rolling 3M Gross Margin % =
+VAR Period = DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -3, MONTH)
+RETURN DIVIDE(CALCULATE([Gross Profit], Period), CALCULATE([Total Revenue], Period))
+Prior Month Gross Profit = CALCULATE([Gross Profit], DATEADD('Calendar'[Date], -1, MONTH))
+Gross Profit MoM % = DIVIDE([Gross Profit] - [Prior Month Gross Profit], [Prior Month Gross Profit])
+Pricing Floor at 20% Margin = DIVIDE([Total Cost], 1 - 0.20)
+Rate Change Needed = [Pricing Floor at 20% Margin] - [Total Revenue]
