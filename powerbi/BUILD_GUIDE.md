@@ -2,15 +2,22 @@
 
 ## Purpose
 
-Create an executive report that connects lane contribution, budget variance, service reliability, and shipment exceptions. One report page should answer one management question.
+Build an executive report over the published 1,200-row synthetic shipment file. The source has one row per shipment and contains actualized demonstration fields only. It has no budget or plan columns, so this report does not claim budget-to-actual variance.
 
-## Data model
+## Import and prepare the data
 
-1. Import the `data/synthetic_shipments.csv` file or the `Shipments` table from a Power BI-ready workbook.
-2. Set `ship_date` to Date, currency fields to Fixed decimal/Currency, and `on_time_flag` to Whole number.
-3. Create the Calendar table below, mark it as the date table, and relate `Calendar[Date]` one-to-many to `Shipments[ship_date]`.
-4. Keep the fact grain at one row per shipment. Do not sum percentages; calculate them from the underlying numerators and denominators.
-5. Add the measures from [measures.dax](measures.dax).
+1. In Power BI Desktop, choose **Get data → Text/CSV** and import `data/synthetic_shipments.csv`.
+2. Name the query/table `Shipments`.
+3. Set `ship_date` to Date; currency fields to Fixed decimal number; `distance_miles`, `weight_lb`, and `stops` to Whole number; `on_time` and `service_exception` to Whole number.
+4. Add `total_cost_usd` in Power Query with this custom column formula:
+
+```powerquery
+[fuel_cost_usd] + [driver_cost_usd] + [maintenance_cost_usd] + [tolls_usd] + [accessorial_cost_usd]
+```
+
+Set its type to Fixed decimal number. This is the sum of the five cost components present in the source file.
+5. Create the Calendar table below, mark it as the date table, and relate `Calendar[Date]` one-to-many to `Shipments[ship_date]`.
+6. Add the measures from [measures.dax](measures.dax).
 
 ```DAX
 Calendar =
@@ -23,48 +30,48 @@ ADDCOLUMNS(
 )
 ```
 
-Sort `Calendar[Month]` by `Calendar[Month Number]`. Use `Calendar[Year Month]` as the month slicer.
+Sort `Calendar[Month]` by `Calendar[Month Number]`. Use `Calendar[Year Month]` as the month axis or slicer.
 
 ## Page 1 — Executive Overview
 
-- KPI cards: Total Revenue, Gross Profit, Gross Margin %, On-Time %, Cost per Mile
+- KPI cards: Total Revenue, Gross Profit, Gross Margin %, On-Time %, Exception Rate
 - Monthly revenue and gross profit trend
 - Ranked lane gross profit bars
-- Budget-to-actual gross profit bridge
-- Recommendation panel with the current top review candidate
+- Lane table with shipment count, gross margin, cost per mile, and on-time rate
+- A short recommendation that identifies the lane for review, with the synthetic data notice visible
 
-**Decision:** Is the operating portfolio financially and operationally healthy, and where should leaders focus first?
+**Decision:** Where should leaders look first across lane economics and service?
 
-## Page 2 — Plan and Variance
-
-- Matrix by month for actual revenue, budget revenue, variance, actual cost, budget cost, and favorable cost variance
-- Profit variance waterfall
-- Cost trend by fuel, labor, maintenance, accessorial, and overhead
-
-**Decision:** Which periods or cost categories explain the variance?
-
-## Page 3 — Lane Economics
+## Page 2 — Lane Economics
 
 - Scatterplot: revenue per mile vs. cost per mile; size by shipment count; color by gross margin
-- Ranked lane table with margin, cost per mile, and on-time rate
-- Bar chart of modeled revenue change required to reach a 20% margin floor
-- Shipment detail drill-through
+- Ranked lane table with revenue, total cost, gross profit, gross margin, cost per mile, and on-time rate
+- Lane and mode slicers
+- Drill-through to shipment rows
 
-**Decision:** Which lanes merit review of pricing, service design, or cost assumptions?
+**Decision:** Which lanes warrant validation of pricing, cost-to-serve, or service design?
 
-## Page 4 — Service and Exceptions
+## Page 3 — Cost and Service
 
-- On-Time %, Exception Rate, and Exception Shipments cards
-- On-time rate by carrier
-- Exception type by shipment count and average gross profit
-- Monthly on-time performance alongside gross margin
+- Cost composition by fuel, driver, maintenance, tolls, and accessorials
+- Cost per mile by lane and mode
+- On-time rate and exception rate by lane and month
+- Monthly trend of gross margin and on-time performance
 
-**Decision:** Which service failures carry the largest modeled financial impact?
+**Decision:** Where do modeled cost and service patterns move together?
+
+## Page 4 — Static-Cost Margin Scenario
+
+- Add a disconnected `Margin Target` parameter table (for example, 10% to 30% in 1-point increments, default 18%).
+- Display current revenue, cost, margin, required revenue at the selected target, and the gap to that level.
+- Label the scenario **static-cost reference only**. It assumes cost and shipment mix do not change; it does not estimate demand response, contract outcomes, or a customer price.
+
+**Decision:** What revenue level would mathematically correspond to the selected margin under a fixed-cost assumption?
 
 ## Slicers and presentation
 
-Use year-month, region, lane, customer, carrier, and mode slicers. Keep each page to one decision and 5–7 visuals. Use a navy/teal/amber palette, reserving red for unfavorable variances. Add a visible **Synthetic portfolio data** notice. Export one 16:9 screenshot per report page after building.
+Use year-month, lane, and mode slicers. Keep each page focused on one decision and 5–7 visuals. Use a navy/teal/amber palette, reserving red for unfavorable indicators. Add a visible **Synthetic portfolio data** notice.
 
 ## Limitations
 
-All data are synthetic. A static-cost pricing floor is a review trigger, not a recommended customer rate. Validate demand, contract terms, competitor context, capacity, cost allocation, and customer impact before a real pricing decision.
+All records and amounts are synthetic. The source has no budget, customer, carrier, region, or exception-category fields. Do not imply budget variance or attribute results to a real customer, employer, carrier, or realized savings. Validate cost allocation, demand, contract terms, capacity, service definitions, and customer impact before applying a real pricing decision.
